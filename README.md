@@ -1,1 +1,1 @@
-# NATS-DigLog-Project-1
+# NATS-DigLog-Project
