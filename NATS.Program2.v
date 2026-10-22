@@ -1,150 +1,318 @@
+
 `timescale 1ns/1ps
 
-// Program 2: 4-to-16 Decoder and Seven-Segment Display
-// Displays hexadecimal values 0 through F.
+// ============================================================
+// CS 4341 - Digital Logic Project Part 2
+// Seven-Segment Display Using a 4-to-16 Decoder
+// Cohort: NATS
+//
+// Module 1: Testbench
+// Module 2: 4-to-16 Decoder
+// Module 3: Breadboard
+// Module 4: Seven-Segment Display
+//
+// Main: Display digits 0 through 9
+// Bonus: Display hexadecimal values A through F
+// ============================================================
 
-// Testbench
+
+// ============================================================
+// STEP 1: TESTBENCH MODULE
+// ============================================================
+// Generates input values for the breadboard.
+// Each value is held for 60 simulation time units.
+// The simulation ends after an additional 10 units.
+// ============================================================
+
 module testbench;
+
+    // STEP 1A: Declare the loop variable
     integer i;
-    reg [3:0] number;
 
-    breadboard bb(number);
+    // STEP 1B: Instantiate the breadboard
+    // The lower four bits represent values 0 through 15
+    breadboard b1(i[3:0]);
 
+    // STEP 1C: Generate the input values
     initial begin
-        for (i = 0; i < 16; i = i + 1) begin
-            number = i;
+
+        // Loop through values 0 to 14
+        for (i = 0; i < 15; i = i + 1) begin
             #60;
         end
+
+        // Hold value 15 for the bonus
+        // Prevent the input from wrapping back to 0
+        #60;
+
+        // STEP 1D: End the simulation
         #10;
         $finish;
+
     end
+
 endmodule
 
-// Breadboard
-module breadboard(input [3:0] number);
+
+// ============================================================
+// STEP 2: 4-TO-16 DECODER MODULE
+// ============================================================
+// Converts a 4-bit binary input into a 16-bit one-hot output.
+// Exactly one output bit is HIGH for each input value.
+//
+// This module uses structural Verilog with NOT and AND gates.
+// ============================================================
+
+module decoder4to16(
+    input [3:0] number,
+    output [15:0] onehot
+);
+
+    // STEP 2A: Declare inverted input wires
+    wire [3:0] not_num;
+
+    // STEP 2B: NOT gates for each input bit
+    not (not_num[0], number[0]);
+    not (not_num[1], number[1]);
+    not (not_num[2], number[2]);
+    not (not_num[3], number[3]);
+
+    // STEP 2C: AND gates for all 16 outputs
+    // Each output corresponds to one binary input value
+
+    // Inputs 0000 - 0011
+    and (onehot[0], not_num[3], not_num[2],
+                     not_num[1], not_num[0]);
+
+    and (onehot[1], not_num[3], not_num[2],
+                     not_num[1], number[0]);
+
+    and (onehot[2], not_num[3], not_num[2],
+                     number[1], not_num[0]);
+
+    and (onehot[3], not_num[3], not_num[2],
+                     number[1], number[0]);
+
+    // Inputs 0100 - 0111
+    and (onehot[4], not_num[3], number[2],
+                     not_num[1], not_num[0]);
+
+    and (onehot[5], not_num[3], number[2],
+                     not_num[1], number[0]);
+
+    and (onehot[6], not_num[3], number[2],
+                     number[1], not_num[0]);
+
+    and (onehot[7], not_num[3], number[2],
+                     number[1], number[0]);
+
+    // Inputs 1000 - 1011
+    and (onehot[8], number[3], not_num[2],
+                     not_num[1], not_num[0]);
+
+    and (onehot[9], number[3], not_num[2],
+                     not_num[1], number[0]);
+
+    and (onehot[10], number[3], not_num[2],
+                      number[1], not_num[0]);
+
+    and (onehot[11], number[3], not_num[2],
+                      number[1], number[0]);
+
+    // Inputs 1100 - 1111
+    and (onehot[12], number[3], number[2],
+                      not_num[1], not_num[0]);
+
+    and (onehot[13], number[3], number[2],
+                      not_num[1], number[0]);
+
+    and (onehot[14], number[3], number[2],
+                      number[1], not_num[0]);
+
+    and (onehot[15], number[3], number[2],
+                      number[1], number[0]);
+
+endmodule
+
+
+// ============================================================
+// STEP 3: BREADBOARD MODULE
+// ============================================================
+// Connects the decoder to the seven-segment display.
+//
+// The decoder produces a 16-bit one-hot number.
+// OR gates determine which display segments turn ON.
+//
+// Segment order: a, b, c, d, e, f, g
+// ============================================================
+
+module breadboard(
+    input [3:0] number
+);
+
+    // STEP 3A: Declare local wires
+
+    // 16-bit one-hot decoder output
     wire [15:0] onehot;
+
+    // Seven individual segment control wires
     wire a, b, c, d, e, f, g;
 
-    decoder4to16 dec(number, onehot);
-    sevenSegment seg(a, b, c, d, e, f, g);
+    // STEP 3B: Instantiate the 4-to-16 decoder
+    decoder4to16 decoder1(number, onehot);
 
-    // Segment controls, active high
-    or(a, onehot[0], onehot[2], onehot[3],
-       onehot[5], onehot[6], onehot[7],
-       onehot[8], onehot[9], onehot[10],
-       onehot[14], onehot[15]);
+    // STEP 3C: Implement the seven OR-gate equations
 
-    or(b, onehot[0], onehot[1], onehot[2],
-       onehot[3], onehot[4], onehot[7],
-       onehot[8], onehot[9], onehot[10],
-       onehot[13]);
+    // Segment A: Top horizontal segment
+    or (a, onehot[0], onehot[2], onehot[3],
+           onehot[5], onehot[6], onehot[7],
+           onehot[8], onehot[9], onehot[10],
+           onehot[14], onehot[15]);
 
-    or(c, onehot[0], onehot[1], onehot[3],
-       onehot[4], onehot[5], onehot[6],
-       onehot[7], onehot[8], onehot[9],
-       onehot[10], onehot[11], onehot[13]);
+    // Segment B: Upper-right vertical segment
+    or (b, onehot[0], onehot[1], onehot[2],
+           onehot[3], onehot[4], onehot[7],
+           onehot[8], onehot[9], onehot[10],
+           onehot[13]);
 
-    or(d, onehot[0], onehot[2], onehot[3],
-       onehot[5], onehot[6], onehot[8],
-       onehot[9], onehot[11], onehot[12],
-       onehot[13], onehot[14]);
+    // Segment C: Lower-right vertical segment
+    or (c, onehot[0], onehot[1], onehot[3],
+           onehot[4], onehot[5], onehot[6],
+           onehot[7], onehot[8], onehot[9],
+           onehot[10], onehot[11], onehot[13]);
 
-    or(e, onehot[0], onehot[2], onehot[6],
-       onehot[8], onehot[10], onehot[11],
-       onehot[12], onehot[13], onehot[14],
-       onehot[15]);
+    // Segment D: Bottom horizontal segment
+    or (d, onehot[0], onehot[2], onehot[3],
+           onehot[5], onehot[6], onehot[8],
+           onehot[9], onehot[11], onehot[12],
+           onehot[13], onehot[14]);
 
-    or(f, onehot[0], onehot[4], onehot[5],
-       onehot[6], onehot[8], onehot[9],
-       onehot[10], onehot[11], onehot[14],
-       onehot[15]);
+    // Segment E: Lower-left vertical segment
+    or (e, onehot[0], onehot[2], onehot[6],
+           onehot[8], onehot[10], onehot[11],
+           onehot[12], onehot[13], onehot[14],
+           onehot[15]);
 
-    or(g, onehot[2], onehot[3], onehot[4],
-       onehot[5], onehot[6], onehot[8],
-       onehot[9], onehot[10], onehot[11],
-       onehot[12], onehot[13], onehot[14],
-       onehot[15]);
+    // Segment F: Upper-left vertical segment
+    or (f, onehot[0], onehot[4], onehot[5],
+           onehot[6], onehot[8], onehot[9],
+           onehot[10], onehot[11], onehot[14],
+           onehot[15]);
 
-    // Print once after signals settle
+    // Segment G: Middle horizontal segment
+    or (g, onehot[2], onehot[3], onehot[4],
+           onehot[5], onehot[6], onehot[8],
+           onehot[9], onehot[10], onehot[11],
+           onehot[12], onehot[13], onehot[14],
+           onehot[15]);
+
+    // STEP 3D: Instantiate the seven-segment display
+    sevensegment display1(a, b, c, d, e, f, g);
+
+    // STEP 3E: Print the breadboard information
     always @(number) begin
+
+        // Allow decoder and segment signals to settle
         #1;
-        $display("In Breadboard, decimal number is : %0d", number);
-        $display("In Breadboard, binary number is : %04b", number);
-        $display("In Breadboard, one hot number is : %016b", onehot);
+
+        // Display the decimal input
+        $display("In Breadboard, decimal number is : %0d",
+                 number);
+
+        // Display the 4-bit binary input
+        $display("In Breadboard, binary number is : %04b",
+                 number);
+
+        // Display the 16-bit one-hot output
+        $display("In Breadboard, one hot number is : %016b",
+                 onehot);
+
+        // Display the seven segment control bits
         $display("In Breadboard, the segments are : [%b%b%b%b%b%b%b]",
-                 a,b,c,d,e,f,g);
+                 a, b, c, d, e, f, g);
+
     end
+
 endmodule
 
-// Structural 4-to-16 Decoder
-module decoder4to16(
-    input [3:0] x,
-    output [15:0] y
+
+// ============================================================
+// STEP 4: SEVEN-SEGMENT DISPLAY MODULE
+// ============================================================
+// Receives seven one-bit segment control inputs.
+//
+// A value of 1 turns a segment ON.
+// A value of 0 turns a segment OFF.
+//
+// Uses conditional statements to create the display
+// using # symbols.
+// ============================================================
+
+module sevensegment(
+    input a, b, c, d, e, f, g
 );
-    wire n0, n1, n2, n3;
 
-    not(n0, x[0]);
-    not(n1, x[1]);
-    not(n2, x[2]);
-    not(n3, x[3]);
-
-    and(y[0],  n3,n2,n1,n0);
-    and(y[1],  n3,n2,n1,x[0]);
-    and(y[2],  n3,n2,x[1],n0);
-    and(y[3],  n3,n2,x[1],x[0]);
-    and(y[4],  n3,x[2],n1,n0);
-    and(y[5],  n3,x[2],n1,x[0]);
-    and(y[6],  n3,x[2],x[1],n0);
-    and(y[7],  n3,x[2],x[1],x[0]);
-    and(y[8],  x[3],n2,n1,n0);
-    and(y[9],  x[3],n2,n1,x[0]);
-    and(y[10], x[3],n2,x[1],n0);
-    and(y[11], x[3],n2,x[1],x[0]);
-    and(y[12], x[3],x[2],n1,n0);
-    and(y[13], x[3],x[2],n1,x[0]);
-    and(y[14], x[3],x[2],x[1],n0);
-    and(y[15], x[3],x[2],x[1],x[0]);
-endmodule
-
-// Seven-Segment Display
-module sevenSegment(
-    input a,b,c,d,e,f,g
-);
-    integer row;
-    reg [5:0] pixels;
-
+    // STEP 4A: Detect changes in the segment inputs
     always @(a or b or c or d or e or f or g) begin
+
+        // Allow breadboard information to print first
         #2;
+
+        // STEP 4B: Display the seven control bits
         $display("In SevenSegment, the segments are : [%b%b%b%b%b%b%b]",
-                 a,b,c,d,e,f,g);
+                 a, b, c, d, e, f, g);
 
-        // Each segment is represented using # symbols
-        for (row = 0; row < 9; row = row + 1) begin
-            pixels = 6'b000000;
+        // STEP 4C: Display the top horizontal segment
+        if (a)
+            $display("######");
+        else
+            $display("      ");
 
-            if (row == 0 && a)
-                pixels = 6'b111111;
-            else if (row >= 1 && row <= 3) begin
-                if (f) pixels[5:4] = 2'b11;
-                if (b) pixels[1:0] = 2'b11;
-            end
-            else if (row == 4 && g)
-                pixels = 6'b111111;
-            else if (row >= 5 && row <= 7) begin
-                if (e) pixels[5:4] = 2'b11;
-                if (c) pixels[1:0] = 2'b11;
-            end
-            else if (row == 8 && d)
-                pixels = 6'b111111;
+        // STEP 4D: Display upper vertical segments
+        // Segment F is left; Segment B is right
+        repeat (3) begin
 
-            // Print only # and spaces
-            $display("%s%s%s%s%s%s",
-                pixels[5] ? "#" : " ",
-                pixels[4] ? "#" : " ",
-                pixels[3] ? "#" : " ",
-                pixels[2] ? "#" : " ",
-                pixels[1] ? "#" : " ",
-                pixels[0] ? "#" : " ");
+            if (f && b)
+                $display("##  ##");
+            else if (f)
+                $display("##    ");
+            else if (b)
+                $display("    ##");
+            else
+                $display("      ");
+
         end
+
+        // STEP 4E: Display the middle horizontal segment
+        if (g)
+            $display("######");
+        else
+            $display("      ");
+
+        // STEP 4F: Display lower vertical segments
+        // Segment E is left; Segment C is right
+        repeat (3) begin
+
+            if (e && c)
+                $display("##  ##");
+            else if (e)
+                $display("##    ");
+            else if (c)
+                $display("    ##");
+            else
+                $display("      ");
+
+        end
+
+        // STEP 4G: Display the bottom horizontal segment
+        if (d)
+            $display("######");
+        else
+            $display("      ");
+
+        // Separate consecutive displays
+        $display("");
+
     end
+
 endmodule
