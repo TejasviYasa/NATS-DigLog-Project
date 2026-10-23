@@ -1,4 +1,3 @@
-
 `timescale 1ns/1ps
 
 // ============================================================
@@ -265,12 +264,10 @@ module sevensegment(
         // STEP 4C: Display the top horizontal segment
         if (a)
             $display("######");
-        else
-            $display("      ");
 
         // STEP 4D: Display upper vertical segments
         // Segment F is left; Segment B is right
-        repeat (3) begin
+        if (f || b) repeat (3) begin
 
             if (f && b)
                 $display("##  ##");
@@ -286,8 +283,6 @@ module sevensegment(
         // STEP 4E: Display the middle horizontal segment
         if (g)
             $display("######");
-        else
-            $display("      ");
 
         // STEP 4F: Display lower vertical segments
         // Segment E is left; Segment C is right
@@ -307,8 +302,6 @@ module sevensegment(
         // STEP 4G: Display the bottom horizontal segment
         if (d)
             $display("######");
-        else
-            $display("      ");
 
         // Separate consecutive displays
         $display("");
