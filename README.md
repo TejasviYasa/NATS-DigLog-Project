@@ -14,7 +14,7 @@
 - Tested the specified sequence of 8 transitions in Phase 2
 - Outputted the current state, trigger, output, and next state
 - Deliverables:
-  NATS.Charter3.pdf 
-  NATS.Citations3.pdf
-  NATS.Design3.pdf
-  NATS.Program3.v
+  - NATS.Charter3.pdf
+  - NATS.Citations3.pdf
+  - NATS.Design3.pdf
+  - NATS.Program3.v
