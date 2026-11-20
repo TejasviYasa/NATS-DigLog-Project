@@ -1,24 +1,21 @@
 # NATS-DigLog-Project
-## Project, Part 1
-- Created `testbench` module
-- Created `breadboard` module
-- Solved for the minterm form of 10 equations (`f0` ... `f9`)
-- Outputted the resulting truth table
-- Deliverables:
-  - NATS.Charter.txt
-  - NATS.Program1.v
-  - NATS.Output1.txt
-  - NATS.Citations.pdf
+## Project, Part 3
 
-## Project, Part 2
-- Created `testbench` module
-- Created `breadboard` module
-- Created a 4-to-16 decoder module using structural Verilog with AND and NOT gates
-- Created a seven segment module to display values using # symbols
-- Converted 4-bit binary inputs into 16-bit one-hot outputs
-- Displayed decimal values 0 through 9
-- Displayed hexadecimal values A through F
-- Outputted the decimal, binary, one-hot, and seven-segment values
-- Deliverables:
-  - NATS.Program2.v
-  - NATS.Output2.txt
+Deliverables:
+NATS.Charter3.pdf
+NATS.Citations3.pdf
+NATS.Design3.pdf
+NATS.Program3.v
+
+Created TestBench module
+Created Breadboard module
+Created DFF module to implement D flip-flops
+Created a sequential state machine with four states (00, 01, 10, 11)
+Solved the state table for all 16 possible transitions
+Solved the next-state equations (NS1, NS0)
+Solved the output equations (Out2, Out1, Out0)
+Created a sequential circuit diagram using D flip-flops and logic gates
+Implemented a clock signal and reset to state 00
+Tested all 16 state transitions in Phase 1
+Tested the specified sequence of 8 transitions in Phase 2
+Outputted the current state, trigger, output, and next state
