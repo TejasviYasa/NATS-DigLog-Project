@@ -2,10 +2,10 @@
 ## Project, Part 3
 
 Deliverables:
-NATS.Charter3.pdf
-NATS.Citations3.pdf
-NATS.Design3.pdf
-NATS.Program3.v
+- NATS.Charter3.pdf
+- NATS.Citations3.pdf
+- NATS.Design3.pdf
+- NATS.Program3.v
 
 - Created TestBench module
 - Created Breadboard module
