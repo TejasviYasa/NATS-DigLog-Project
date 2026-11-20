@@ -1,12 +1,6 @@
 # NATS-DigLog-Project
 ## Project, Part 3
 
-Deliverables:
-- NATS.Charter3.pdf
-- NATS.Citations3.pdf
-- NATS.Design3.pdf
-- NATS.Program3.v
-
 - Created TestBench module
 - Created Breadboard module
 - Created DFF module to implement D flip-flops
@@ -19,3 +13,8 @@ Deliverables:
 - Tested all 16 state transitions in Phase 1
 - Tested the specified sequence of 8 transitions in Phase 2
 - Outputted the current state, trigger, output, and next state
+- Deliverables:
+  NATS.Charter3.pdf 
+  NATS.Citations3.pdf
+  NATS.Design3.pdf
+  NATS.Program3.v
