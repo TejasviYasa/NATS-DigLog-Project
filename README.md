@@ -18,3 +18,4 @@
   - NATS.Citations3.pdf
   - NATS.Design3.pdf
   - NATS.Program3.v
+  - NATS.Design3WriteUp
